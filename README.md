@@ -7,7 +7,7 @@
 3、Git Bash命令行 （https://msysgit.github.io/ 或 https://www.sourcetreeapp.com/ ）<br/>
 4、Maven https://maven.apache.org/download.cgi<br/>
 5、将该工程fork到自己Github下（fork按钮在github工程页面右上角）<br/>
-6、通过 git clone 命令将刚刚fork过去的代码工程下载（注意是clone 你自己的github账号下的代码）<br/>
+6、通过 git clone 命令将刚刚fork过去的代码工程下载（注意是clone 你自己的github账号下的代码）
 7、导入到IDE中，保证环境运行没有问题<br/>
 <hr/>
 <h1>考试提醒</h1>
@@ -21,5 +21,5 @@
 8、除题目明确要求需要考虑的异常情况、输入校验外，其他异常情况和输入校验一律不需要考虑。<br/>
 9、关于代码提交提交到你自己的github从该工程fork过去的工程下。<br/>
   比如路径为https://github.com/OwenTse/ExamDemo.git   其中OwenTse为gitHub Username<br/>
-  考试结束截止时间考试程序会根据各位提供的GitHub Username去拉取代码，后进行自动的单元测试5555<br/>
+  考试结束截止时间考试程序会根据各位提供的GitHub Username去拉取代码，后进行自动的单元测试<br/>
 
