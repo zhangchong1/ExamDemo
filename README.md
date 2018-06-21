@@ -7,7 +7,7 @@
 3、Git Bash命令行 （https://msysgit.github.io/ 或 https://www.sourcetreeapp.com/ ）<br/>
 4、Maven https://maven.apache.org/download.cgi<br/>
 5、将该工程fork到自己Github下（fork按钮在github工程页面右上角）<br/>
-6、通过 git clone 命令将刚刚fork过去的代码工程下载（注意是clone 你自己的github账号下的代码）<br/>
+6、通过 git clone 命令将刚刚fork过去的代码工程下载（注意是clone 你自己的github账号下的代码）
 7、导入到IDE中，保证环境运行没有问题<br/>
 <hr/>
 <h1>比赛提醒</h1>
