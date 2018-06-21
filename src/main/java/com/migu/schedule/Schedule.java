@@ -1,112 +1,122 @@
-package com.migu;
-
+package com.migu.schedule;
 
 import com.migu.schedule.constants.ReturnCodeKeys;
 import com.migu.schedule.info.TaskInfo;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /*
 *类名和方法不能修改
  */
 public class Schedule {
-	private List<Integer> taskQueue = new ArrayList<Integer>(10);
-	//key:计算节点id
-	//value index=0:节点中运行的任务数  index=1:节点中最大可运行任务数   >2:taskId
-	private Map<Integer,int[]> nodeTaskInfo = new HashMap<Integer,int[]>();
-    private Map<Integer,Integer> taskQueueConsumption = new HashMap<Integer,Integer>();
-    public int init() {
-    	this.taskQueue.clear();
-    	this.nodeTaskInfo.clear();
-        return ReturnCodeKeys.E001;
-    }
+	private final Set<Integer> nodes = new TreeSet<>();
+	private final Map<Integer, TaskItem> tasks = new TreeMap<>();
+	private final Set<Integer> pending = new HashSet<>();
 
-
-    public int registerNode(int nodeId) {
-        if(nodeId <= 0){
-            return ReturnCodeKeys.E004;
-        }
-        if (this.nodeTaskInfo.containsKey(nodeId)){
-            return ReturnCodeKeys.E005;
-        }
-        int idleResNum = 20;
-        this.nodeTaskInfo.put(nodeId, new int[]{0,idleResNum,0});
-        return ReturnCodeKeys.E003;
-    }
-
-    public int unregisterNode(int nodeId) {
-        if(nodeId <= 0){
-            return ReturnCodeKeys.E004;
-        }
-        if (this.nodeTaskInfo.containsKey(nodeId)){
-        	this.nodeTaskInfo.remove(nodeId);
-        } else {
-            return ReturnCodeKeys.E007;
-        }
-        //查看当前节点是否有任务还在进行，有，将其添加到队列中
-        int[] v = nodeTaskInfo.get(nodeId);
-        if ( v[0]!= 0){
-        	for(int i = 2;i < v.length;i++){
-        		if (taskQueue.size()<=10){
-        			taskQueue.add(v[i]);
-        		}else{
-        			System.out.println("达到任务个数最大限度");
-        			break;
-        		}
-        	}
-        }
-        return ReturnCodeKeys.E006;
-    }
-
-
-    public int addTask(int taskId, int consumption) {
-        if(taskId <= 0){
-            return ReturnCodeKeys.E009;
-        }
-        if(taskQueue.contains(taskId)){
-            return ReturnCodeKeys.E010;
-        }
-		if (taskQueue.size()<=10){
-			taskQueue.add(taskId);
-            taskQueueConsumption.put(taskId,consumption);
-            return ReturnCodeKeys.E008;
-		}else{
-			System.out.println("达到任务个数最大限度");
+	private TaskItem assignTask(int consumption, int nodeId) {
+		for(Map.Entry<Integer, TaskItem> entry: tasks.entrySet()) {
+		    TaskItem item = entry.getValue();
+			if(-1 == item.getNodeId() && item.getConsumption() == consumption) {
+				item.setNodeId(nodeId);
+				return item;
+			}
 		}
-        return ReturnCodeKeys.E008;
-    }
+		return null;
+	}
+	
+	
+	public int init() {
+		nodes.clear();
+		tasks.clear();
+		pending.clear();
+		return ReturnCodeKeys.E001;
+	}
 
+	
 
-    public int deleteTask(int taskId) {
-        if(taskId <= 0){
-            return ReturnCodeKeys.E009;
-        }
-		if (taskQueue.contains(taskId)){
-			taskQueue.remove(taskId);
-            return ReturnCodeKeys.E011;
-		}else{
-			System.out.println("删除任务失败");
-            return ReturnCodeKeys.E012;
-		}								
+	public int registerNode(int nodeId) {
+		if (nodeId > 0) {
+			if (nodes.contains(nodeId)) {
+				return ReturnCodeKeys.E005;
+			} else {
+				nodes.add(nodeId);
+				return ReturnCodeKeys.E003;
+			}
+		} else {
+			return ReturnCodeKeys.E004;
+		}
+	}
 
-    }
+	
 
+	public int unregisterNode(int nodeId) {
+		if (nodeId > 0) {
+			return (nodes.remove(nodeId)) ? ReturnCodeKeys.E006 : ReturnCodeKeys.E007;
+		} else {
+			return ReturnCodeKeys.E004;
+		}
+	}
 
-    public int scheduleTask(int threshold) {
-        if(threshold <=0){
-            return ReturnCodeKeys.E002;
-        }
-        return ReturnCodeKeys.E013;
-    }
+	
+	public int addTask(int taskId, int consumption) {
 
+		if (taskId > 0 && consumption > 0) {
+			if (!tasks.containsKey(taskId)) {
+				tasks.put(taskId, new TaskItem(taskId, consumption));
+				pending.add(taskId);
+				return ReturnCodeKeys.E008;
+			} else {
+				return ReturnCodeKeys.E010;
+			}
+		} else {
+			return ReturnCodeKeys.E009;
+		}
+	}
 
-    public int queryTaskStatus(List<TaskInfo> tasks) {
+	
+	public int deleteTask(int taskId) {
+		if (taskId > 0) {
+			if (tasks.containsKey(taskId)) {
+				tasks.remove(taskId);
+				pending.remove(taskId);
+				return ReturnCodeKeys.E011;
+			} else {
+				return ReturnCodeKeys.E012;
+			}
+		} else {
+			return ReturnCodeKeys.E009;
+		}
+	}
 
-        return ReturnCodeKeys.E015;
-    }
+	
+	public int scheduleTask(int threshold) {
+	    // TODO 方法未实现
+	        return ReturnCodeKeys.E000;
+	}
+
+	
+
+	public int queryTaskStatus(List<TaskInfo> result) {
+		if (null != result) {
+			result.clear();
+			for (TaskItem item : tasks.values()) {
+				TaskInfo task = new TaskInfo();
+				task.setNodeId(item.getNodeId());
+				task.setTaskId(item.getTaskId());
+				result.add(task);
+			}
+			return ReturnCodeKeys.E015;
+		} else {
+			return ReturnCodeKeys.E016;
+		}
+	}
 
 }
